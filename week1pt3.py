@@ -57,7 +57,7 @@ def calculate_standard_deviation(returns):
     return calculate_variance(returns)**0.5
 
 def calculate_sharpe_ratio(mean_return, standard_deviation, risk_free_rate=0.001):
-    if not standard_deviation:
+    if standard_deviation == 0:
         raise ValueError("standard_deviation must not be zero")
     excess_return = mean_return - risk_free_rate
     sharpe_ratio = excess_return/standard_deviation
@@ -90,33 +90,27 @@ sharpe_a = calculate_sharpe_ratio(mean_return=mean_return_a, standard_deviation=
 sharpe_b = calculate_sharpe_ratio(mean_return=mean_return_b, standard_deviation= std_b)
 sharpe_portfolio = calculate_sharpe_ratio(mean_return=mean_portfolio_return, standard_deviation= portfolio_std)
 
-print(f"returns_a:{returns_a}")
-print(f"returns_b:{returns_b}")
-print(f"mean_return_a:{mean_return_a}")
-print(f"mean_return_b:{mean_return_b}")
-print(f"portfolio_returns:{portfolio_returns}")
-print(f"mean_portfolio_return:{mean_portfolio_return}")
-print(f"variance_a:{variance_a}")
-print(f"variance_b:{variance_b}")
-print(f"std_a:{std_a}")
-print(f"std_b:{std_b}")
-print(f"portfolio_variance:{portfolio_variance}")
-print(f"portfolio_std:{portfolio_std}")
-print(f"sharpe_a:{sharpe_a}")
-print(f"sharpe_b:{sharpe_b}")
-print(f"sharpe_portfolio:{sharpe_portfolio}")
+print(f"Asset A mean return:{mean_return_a}")
+print(f"Asset A standard deviation:{std_a}")
+print(f"Asset A Sharpe ratio:{sharpe_a}")
+print(f"Asset B mean return:{mean_return_b}")
+print(f"Asset B standard deviation:{std_b}")
+print(f"Asset B Sharpe ratio:{sharpe_b}")
+print(f"Portfolio mean return:{mean_portfolio_return}")
+print(f"Portfolio standard deviation:{portfolio_std}")
+print(f"Portfolio Sharpe ratio:{sharpe_portfolio}")
 
-if mean_return_a > mean_return_b:
-    print("Asset A has higher average return.")
-else:
-    print("Asset B has higher average return.")
+sharpe_scores = {"Asset A": sharpe_a, "Asset B": sharpe_b, "Portfolio": sharpe_portfolio}
+best_sharpe = max(sharpe_scores.values())
+tolerance = 1e-12
 
-if mean_portfolio_return > 0:
-    print("The portfolio has positive average return.")
-else:
-    print("The portfolio has non-positive average return.")
+best_choice = []
 
-if std_a > std_b:
-    print("Asset A has higher risk")    
+for name, sharpe in sharpe_scores.items():
+    if abs(sharpe-best_sharpe) < tolerance:
+        best_choice.append(name)
+
+if len(best_choice) == 1:
+    print(f"Best risk-adjusted choice:{best_choice[0]}")
 else:
-    print("Asset B has higher risk")
+    print(f"Tie between:{", ".join(best_choice)}")
