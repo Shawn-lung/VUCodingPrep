@@ -42,6 +42,9 @@ def calculate_sharpe_ratio(mean_return, standard_deviation, risk_free_rate=0.001
     excess_return = mean_return - risk_free_rate
     sharpe_ratio = excess_return/standard_deviation
     return(sharpe_ratio)
+import pandas as pd
+import matplotlib.pyplot as plt
+
 
 prices_a = [100, 102, 101, 105, 107]
 prices_b = [50, 49, 51, 50, 52]    
@@ -70,27 +73,25 @@ sharpe_a = calculate_sharpe_ratio(mean_return=mean_return_a, standard_deviation=
 sharpe_b = calculate_sharpe_ratio(mean_return=mean_return_b, standard_deviation= std_b)
 sharpe_portfolio = calculate_sharpe_ratio(mean_return=mean_portfolio_return, standard_deviation= portfolio_std)
 
-print(f"Asset A mean return:{mean_return_a}")
-print(f"Asset A standard deviation:{std_a}")
-print(f"Asset A Sharpe ratio:{sharpe_a}")
-print(f"Asset B mean return:{mean_return_b}")
-print(f"Asset B standard deviation:{std_b}")
-print(f"Asset B Sharpe ratio:{sharpe_b}")
-print(f"Portfolio mean return:{mean_portfolio_return}")
-print(f"Portfolio standard deviation:{portfolio_std}")
-print(f"Portfolio Sharpe ratio:{sharpe_portfolio}")
+summary_table = pd.DataFrame({"Assets": ["Asset A", "Asset B", "Portfolio"], "Mean Return": [mean_return_a, mean_return_b, mean_portfolio_return], 
+                              "Std Dev": [std_a, std_b, portfolio_std], "Sharpe Ratio": [sharpe_a, sharpe_b, sharpe_portfolio]})
+summary_table = summary_table.round(4)
+print(summary_table)
 
-sharpe_scores = {"Asset A": sharpe_a, "Asset B": sharpe_b, "Portfolio": sharpe_portfolio}
-best_sharpe = max(sharpe_scores.values())
-tolerance = 1e-12
+fig, ax = plt.subplots(figsize = (8, 2.1))
+ax.axis("off")
+ax.set_title("Lesson 1 Summary Table", pad=12)
 
-best_choice = []
+table = ax.table(
+    cellText=summary_table.values, 
+    colLabels=summary_table.columns,
+    loc="center",
+    cellLoc="center"
+)
+table.auto_set_font_size("False")
+table.set_fontsize(10)
+table.scale(1, 1.4)
 
-for name, sharpe in sharpe_scores.items():
-    if abs(sharpe-best_sharpe) < tolerance:
-        best_choice.append(name)
-
-if len(best_choice) == 1:
-    print(f"Best risk-adjusted choice:{best_choice[0]}")
-else:
-    print(f"Tie between:{", ".join(best_choice)}")
+plt.tight_layout()
+plt.savefig("lesson_01_summary_table.png", dpi=300, bbox_inches="tight")
+plt.show()
